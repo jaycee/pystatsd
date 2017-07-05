@@ -335,9 +335,11 @@ def _test_set(cl, proto):
     cl.set('foo', 'bar')
     _sock_check(cl._sock, 3, proto, 'foo:bar|s')
 
-    cl.set('foo', 2.3, 0.5)
+    cl.set('foo', 2.3, rate=0.5)
     _sock_check(cl._sock, 4, proto, 'foo:2.3|s|@0.5')
 
+    cl.set('foo', 2.3, tags={'bar': 'baz'})
+    _sock_check(cl._sock, 5, proto, 'foo,bar=baz:2.3|s')
 
 @mock.patch.object(random, 'random', lambda: -1)
 def test_set_udp():
@@ -380,17 +382,18 @@ def test_timing_tcp():
 
 def _test_prepare(cl, proto):
     tests = (
-        ('foo:1|c', ('foo', '1|c', 1)),
-        ('bar:50|ms|@0.5', ('bar', '50|ms', 0.5)),
-        ('baz:23|g', ('baz', '23|g', 1)),
+        ('foo,bar=baz:1|c', ('foo', '1|c', {'bar': 'baz'}, 1)),
+        ('foo:1|c', ('foo', '1|c', {}, 1)),
+        ('bar:50|ms|@0.5', ('bar', '50|ms', {}, 0.5)),
+        ('baz:23|g', ('baz', '23|g', {}, 1)),
     )
 
-    def _check(o, s, v, r):
+    def _check(o, s, v, t, r):
         with mock.patch.object(random, 'random', lambda: -1):
-            eq_(o, cl._prepare(s, v, r))
+            eq_(o, cl._prepare(s, v, t, r))
 
-    for o, (s, v, r) in tests:
-        _check(o, s, v, r)
+    for o, (s, v, t, r) in tests:
+        _check(o, s, v, t, r)
 
 
 @mock.patch.object(random, 'random', lambda: -1)
