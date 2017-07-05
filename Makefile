@@ -6,12 +6,14 @@ deps: bin/pip
 	bin/pip install -r requirements.txt
 
 test:	deps
-	bin/python setup.py test
+	bin/tox
 
 dist:
 	bin/python setup.py dist
 
 clean:
-	- rm -rf bin lib local pip-selfcheck.json share build dist man statsd.egg-inf
+	- rm -rf include bin lib local share build dist man
+	- rm statsd.egg-inf
+	- rm pip-selfcheck.json
 	- find . -type f -name "*.pyc" -delete
 	- find . -type f -name "*.pyo" -delete 
