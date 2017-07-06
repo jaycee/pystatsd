@@ -16,4 +16,4 @@ clean:
 	- rm statsd.egg-inf
 	- rm pip-selfcheck.json
 	- find . -type f -name "*.pyc" -delete
-	- find . -type f -name "*.pyo" -delete 
+	- find . -type f -name "*.pyo" -delete
