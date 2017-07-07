@@ -128,13 +128,8 @@ class StatsClientBase(object):
         if self._prefix:
             stat = '%s.%s' % (self._prefix, stat)
 
-        tag_list = []
-        for k,v in tags.items():
-            tag_list.append('%s=%s' % (k,v))
-        tags = ','.join(tag_list)
-
-        if tags != '':
-            tags = ',%s' % tags
+        tags = ','.join('{}={}'.format(*i) for i in tags.items())
+        tags = '' if tags == '' else ',%s' % tags
 
         return '%s%s:%s' % (stat, tags, value)
 
