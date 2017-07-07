@@ -12,8 +12,7 @@ dist:
 	bin/python setup.py dist
 
 clean:
-	- rm -rf include bin lib local share build dist man
-	- rm statsd.egg-inf
+	- rm -rf include bin lib local share build dist man ./.tox statsd.egg-info
 	- rm pip-selfcheck.json
 	- find . -type f -name "*.pyc" -delete
-	- find . -type f -name "*.pyo" -delete 
+	- find . -type f -name "*.pyo" -delete
