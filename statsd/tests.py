@@ -231,7 +231,7 @@ def _test_resolution(cl, proto, addr):
 
 
 def test_ipv6_resolution_udp():
-    cl = _udp_client(addr='localhost', ipv6=True)
+    cl = _udp_client(addr='ip6-localhost', ipv6=True)
     _test_resolution(cl, 'udp', ('::1', 8125, 0, 0))
 
 
