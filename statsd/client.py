@@ -13,10 +13,10 @@ __all__ = ['StatsClient', 'TCPStatsClient']
 class Timer(object):
     """A context manager/decorator for statsd.timing()."""
 
-    def __init__(self, client, stat, tags={}, rate=1):
+    def __init__(self, client, stat, tags=None, rate=1):
         self.client = client
         self.stat = stat
-        self.tags = tags
+        self.tags = {} if tags is None else tags
         self.rate = rate
         self.ms = None
         self._sent = False
@@ -78,23 +78,28 @@ class StatsClientBase(object):
     def pipeline(self):
         pass
 
-    def timer(self, stat, tags={}, rate=1):
+    def timer(self, stat, tags=None, rate=1):
+        tags = {} if tags is None else tags
         return Timer(self, stat, tags, rate)
 
-    def timing(self, stat, delta, tags={}, rate=1):
+    def timing(self, stat, delta, tags=None, rate=1):
         """Send new timing information. `delta` is in milliseconds."""
+        tags = {} if tags is None else tags
         self._send_stat(stat, '%0.6f|ms' % delta, tags, rate)
 
-    def incr(self, stat, count=1, tags={}, rate=1):
+    def incr(self, stat, count=1, tags=None, rate=1):
         """Increment a stat by `count`."""
+        tags = {} if tags is None else tags
         self._send_stat(stat, '%s|c' % count, tags, rate)
 
-    def decr(self, stat, count=1, tags={}, rate=1):
+    def decr(self, stat, count=1, tags=None, rate=1):
         """Decrement a stat by `count`."""
+        tags = {} if tags is None else tags
         self.incr(stat, -count, tags, rate)
 
-    def gauge(self, stat, value, rate=1, tags={}, delta=False):
+    def gauge(self, stat, value, rate=1, tags=None, delta=False):
         """Set a gauge value."""
+        tags = {} if tags is None else tags
         if value < 0 and not delta:
             if rate < 1:
                 if random.random() > rate:
@@ -106,8 +111,9 @@ class StatsClientBase(object):
             prefix = '+' if delta and value >= 0 else ''
             self._send_stat(stat, '%s%s|g' % (prefix, value), tags, rate)
 
-    def set(self, stat, value, tags={}, rate=1):
+    def set(self, stat, value, tags=None, rate=1):
         """Set a set value."""
+        tags = {} if tags is None else tags
         self._send_stat(stat, '%s|s' % value, tags, rate)
 
     def _send_stat(self, stat, value, tags, rate):
